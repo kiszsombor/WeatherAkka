@@ -13,7 +13,7 @@ namespace WeatherAkka.Models
         private readonly Geocoding geocoding;
         private readonly CurrentWeather currentWeather;
 
-        public WeatherActor(IActorRef fileWriter)
+        public WeatherActor(IActorRef fileWriter, IActorRef weather)
         {
             // _countryName = countryName;
             // geocodingList = new List<Geocoding>();
@@ -23,19 +23,20 @@ namespace WeatherAkka.Models
             Receive<string>(x =>
             {
                 GetWeatherAsync(x).Wait();
-                // Sender.Tell(currentWeather);
-                String s = currentWeather.ToString();
                 // System.Diagnostics.Debug.WriteLine(currentWeather);
-                fileWriter.Tell(s);
+                string data = currentWeather.ToString();
+                weather.Tell(currentWeather);
+                fileWriter.Tell(x + ": " + data);
+                // Sender.Tell(x + ": " + data);
             });
         }
 
-        public async Task GetWeatherAsync(string countryName)
+        public async Task GetWeatherAsync(string cityName)
         {
             var client = new HttpClient();
 
             var request = new HttpRequestMessage(HttpMethod.Get,
-                "https://geocoding-api.open-meteo.com/v1/search?name=" + countryName);
+                "https://geocoding-api.open-meteo.com/v1/search?name=" + cityName);
 
             var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode(); // Throw an exception if error

@@ -10,8 +10,8 @@ namespace WeatherAkka.Actors
             Receive<string>(x =>
             {
                 // System.Diagnostics.Debug.WriteLine(x);
-                File.WriteAllText("Current_weather_data.txt", x);
-                // File.WriteAllText("..\\..\\Current_weather_data.txt", x);
+                // File.WriteAllText("Current_weather_data.txt", x);
+                File.WriteAllText("..\\..\\Current_weather_data.txt", x);
                 
             });
         }

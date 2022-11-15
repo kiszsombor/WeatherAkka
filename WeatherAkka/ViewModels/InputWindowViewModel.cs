@@ -1,22 +1,21 @@
-﻿using Akka.Actor;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
-using WeatherAkka.Models;
+﻿using System.ComponentModel;
+using System.Data;
+using System.Windows.Data;
 
 namespace WeatherAkka.ViewModels
 {
     public class InputWindowViewModel : INotifyPropertyChanged
     {
+        private string name;
+        private string weatherData;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public InputWindowViewModel()
         {
             PrintCurrentWeather = new MyICommand(OnPrint);
+            WeatherData = "*";
         }
-
-        private string name;
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public string Name
         {
@@ -32,10 +31,19 @@ namespace WeatherAkka.ViewModels
             }
         }
 
+        public string WeatherData { get => weatherData; set => weatherData = value; }
+
         private void RaisePropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
+
+        public void RefreshLabel(string label)
+        {
+            WeatherData= label;
+            
+        }
+
         public MyICommand PrintCurrentWeather { get; set; }
 
         private void OnPrint()

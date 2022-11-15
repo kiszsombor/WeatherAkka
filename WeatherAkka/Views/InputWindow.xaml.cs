@@ -1,5 +1,4 @@
 ﻿using System.Windows.Controls;
-using WeatherAkka.Models;
 
 namespace WeatherAkka.Views.InputWindows
 {
@@ -13,14 +12,4 @@ namespace WeatherAkka.Views.InputWindows
             InitializeComponent();
         }
     }
-
-    /*
-    public partial class WeatherInputWindow : ReceiveActor
-    {
-        public WeatherInputWindow()
-        {
-            
-        }
-    }
-    */
 }
