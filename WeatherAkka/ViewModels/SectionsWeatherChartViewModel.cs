@@ -86,6 +86,7 @@ namespace WeatherAkka.ViewModels
 
             var temps = new ChartValues<ObservableValue>();
 
+            labels.Clear();
             weatherForecast.Times.ForEach(time => labels.Add(time.ToString()));
             weatherForecast.Temperature_2m.ForEach(temp => temps.Add(new ObservableValue(temp)));
 

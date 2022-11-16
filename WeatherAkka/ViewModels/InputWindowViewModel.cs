@@ -16,7 +16,7 @@ namespace WeatherAkka.ViewModels
 
         public SectionsWeatherChartViewModel SectionsWeatherChartViewModel 
         { 
-            get => sectionsWeatherChartViewModel; 
+            get => sectionsWeatherChartViewModel;
             set => sectionsWeatherChartViewModel = value; 
         }
 

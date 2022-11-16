@@ -1,1 +1,1 @@
-Los Angeles: Temperature = 9,2°C, Windspeed = 11,4km/h, Winddirection = 305°, Weathercode = 0 WMO code, Time = 2022. 11. 16. 13:00:00
+Budapest: Temperature = 10°C, Windspeed = 3,4km/h, Winddirection = 18°, Weathercode = 3 WMO code, Time = 2022. 11. 16. 14:00:00
