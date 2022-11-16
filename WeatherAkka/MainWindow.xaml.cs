@@ -18,15 +18,16 @@ namespace WeatherAkka
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var input = new InputWindowViewModel();
+            var input = new InputWindowViewModel(Dispatcher);
             DataContext = input;
+            // var chart = new SectionsWeatherChartViewModel();
 
             var system = ActorSystem.Create("MySystem");
 
             // var fw = system.ActorOf(Props.Create(() => new FileWriterActor()), "FileWriterActor");
             // var wa = system.ActorOf(Props.Create(() => new WeatherActor(fw)), "WeatherActor");
             // var ia = system.ActorOf(Props.Create(() => new InputActor(wa, input)), "InputActor");
-            system.ActorOf(Props.Create(() => new InputActor(input)), "InputActor");
+            system.ActorOf(Props.Create(() => new InputActor(input/*, chart*/)), "InputActor");
         }
     }
 }

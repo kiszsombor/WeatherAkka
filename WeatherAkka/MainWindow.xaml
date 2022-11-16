@@ -6,8 +6,13 @@
         xmlns:local="clr-namespace:WeatherAkka"
         xmlns:view="clr-namespace:WeatherAkka.Views.InputWindows"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="720" Width="1280">
     <Grid>
         <view:InputWindow x:Name="InputWindowViewModel"/>
+        <!-- Button Content = "Delete" 
+            Command = "{Binding DeleteCommand}"
+            HorizontalAlignment = "Left" 
+            VerticalAlignment = "Center" 
+            Width = "75" / -->
     </Grid>
 </Window>

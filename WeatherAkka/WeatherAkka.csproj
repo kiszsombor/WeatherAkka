@@ -35,8 +35,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Akka, Version=1.4.45.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.1.4.45\lib\netstandard2.0\Akka.dll</HintPath>
+    <Reference Include="Akka, Version=1.4.46.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.1.4.46\lib\netstandard2.0\Akka.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.0.9.7\lib\net45\LiveCharts.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts.Wpf, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.Wpf.0.9.7\lib\net45\LiveCharts.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.ObjectPool, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.ObjectPool.7.0.0\lib\net462\Microsoft.Extensions.ObjectPool.dll</HintPath>
@@ -107,10 +113,17 @@
     </ApplicationDefinition>
     <Compile Include="Actors\FileWriterActor.cs" />
     <Compile Include="Actors\InputActor.cs" />
+    <Compile Include="Models\CurrentWeather.cs" />
+    <Compile Include="Models\Geocoding.cs" />
+    <Compile Include="Models\WeatherForecast.cs" />
     <Compile Include="MyICommand.cs" />
     <Compile Include="ViewModels\InputWindowViewModel.cs" />
+    <Compile Include="ViewModels\SectionsWeatherChartViewModel.cs" />
     <Compile Include="Views\InputWindow.xaml.cs">
       <DependentUpon>InputWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SectionsWeather.xaml.cs">
+      <DependentUpon>SectionsWeather.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -125,6 +138,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\InputWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SectionsWeather.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -157,8 +174,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel;
-using System.Data;
 using System.Runtime.CompilerServices;
-using System.Windows.Data;
 
 namespace WeatherAkka.ViewModels
 {
@@ -12,10 +10,21 @@ namespace WeatherAkka.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public InputWindowViewModel()
+        private SectionsWeatherChartViewModel sectionsWeatherChartViewModel;
+
+        public MyICommand PrintCurrentWeather { get; set; }
+
+        public SectionsWeatherChartViewModel SectionsWeatherChartViewModel 
+        { 
+            get => sectionsWeatherChartViewModel; 
+            set => sectionsWeatherChartViewModel = value; 
+        }
+
+        public InputWindowViewModel(System.Windows.Threading.Dispatcher dispatcher)
         {
             PrintCurrentWeather = new MyICommand(OnPrint);
             WeatherData = "*";
+            SectionsWeatherChartViewModel = new SectionsWeatherChartViewModel(dispatcher);
         }
 
         public string Name
@@ -49,23 +58,24 @@ namespace WeatherAkka.ViewModels
 
         public void RefreshLabel(string label)
         {
-            WeatherData= label;
-            
+            WeatherData = Name + ": " + label;
         }
-
-        public MyICommand PrintCurrentWeather { get; set; }
 
         private void OnPrint()
         {
             RaisePropertyChanged(nameof(Name));
         }
 
-        /*
-        private void OnPropertyChanged([CallerMemberName] string propName="")
+        protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
-        }
-        */
+            if (!Equals(field, newValue))
+            {
+                field = newValue;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+                return true;
+            }
 
+            return false;
+        }
     }
 }

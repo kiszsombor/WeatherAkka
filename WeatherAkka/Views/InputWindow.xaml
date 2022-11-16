@@ -4,15 +4,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WeatherAkka.Views.InputWindows" 
+             xmlns:view="clr-namespace:WeatherAkka.Views.SectionsWeatherCharts"
              xmlns:viewmodels="clr-namespace:WeatherAkka.ViewModels" 
              d:DataContext="{d:DesignInstance Type=viewmodels:InputWindowViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="800">
     <Grid>
-        <StackPanel Orientation = "Horizontal">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="5*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation = "Horizontal">
             <TextBox HorizontalAlignment="Left" Margin="20, 20, 20, 20" TextWrapping="Wrap" Text="{Binding Name}" VerticalAlignment="Top" Width="195" Height="20"/>
             <Button Content="Write to file" Command="{Binding PrintCurrentWeather}" Margin="10,20,10,10" VerticalAlignment="Top" Width="89"/>
             <Label Margin="10,20,10,10" Content="{Binding WeatherData}"></Label>
         </StackPanel>
+        <view:SectionsWeather Grid.Row="1" DataContext="{Binding SectionsWeatherChartViewModel}"/>
     </Grid>
 </UserControl>

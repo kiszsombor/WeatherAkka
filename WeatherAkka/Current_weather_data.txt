@@ -1,1 +1,1 @@
-Szolnok: Temperature = 8,7°C, Windspeed = 6,2km/h, Winddirection = 144°, Weathercode = 51 WMO code, Time = 2022. 11. 16. 7:00:00
+Los Angeles: Temperature = 9,2°C, Windspeed = 11,4km/h, Winddirection = 305°, Weathercode = 0 WMO code, Time = 2022. 11. 16. 13:00:00

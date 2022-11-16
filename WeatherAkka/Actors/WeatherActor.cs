@@ -12,13 +12,13 @@ namespace WeatherAkka.Models
     {
         private readonly Geocoding geocoding;
         private readonly CurrentWeather currentWeather;
+        private readonly WeatherForecast weatherForecast;
 
         public WeatherActor(IActorRef fileWriter, IActorRef weather)
         {
-            // _countryName = countryName;
-            // geocodingList = new List<Geocoding>();
             geocoding = new Geocoding();
             currentWeather = new CurrentWeather();
+            weatherForecast = new WeatherForecast();
 
             Receive<string>(x =>
             {
@@ -27,7 +27,8 @@ namespace WeatherAkka.Models
                 string data = currentWeather.ToString();
                 weather.Tell(currentWeather);
                 fileWriter.Tell(x + ": " + data);
-                // Sender.Tell(x + ": " + data);
+                // Sender.Tell(x + ": " + data); // ???
+                weather.Tell(weatherForecast);
             });
         }
 
@@ -50,8 +51,10 @@ namespace WeatherAkka.Models
             geocoding.Latitude = data.SelectToken("results[0].latitude").Value<double>();
             geocoding.Longitude = data.SelectToken("results[0].longitude").Value<double>();
 
-            NumberFormatInfo nfi = new NumberFormatInfo();
-            nfi.NumberDecimalSeparator = ".";
+            NumberFormatInfo nfi = new NumberFormatInfo
+            {
+                NumberDecimalSeparator = "."
+            };
 
             request = new HttpRequestMessage(HttpMethod.Get,
             "https://api.open-meteo.com/v1/forecast?latitude=" + geocoding.Latitude.ToString(nfi) + "&longitude=" + geocoding.Longitude.ToString(nfi)
@@ -72,35 +75,18 @@ namespace WeatherAkka.Models
             currentWeather.Winddirection = data.SelectToken("current_weather.winddirection").Value<double>();
             currentWeather.Weathercode = data.SelectToken("current_weather.weathercode").Value<int>();
             currentWeather.Time = data.SelectToken("current_weather.time").Value<DateTime>();
-        }
-    }
 
-    public class Geocoding
-    {
-        private double latitude;
-        private double longitude;
+            foreach (var singleProp in data.SelectToken("hourly.time"))
+            {
+                weatherForecast.Times.Add(singleProp.Value<DateTime>());
+            }
 
-        public double Latitude { get => latitude; set => latitude = value; }
-        public double Longitude { get => longitude; set => longitude = value; }
+            foreach (var singleProp in data.SelectToken("hourly.temperature_2m"))
+            {
+                weatherForecast.Temperature_2m.Add(singleProp.Value<double>());
+            }
 
-        public override string ToString()
-        {
-            return Latitude + " " + Longitude;
-        }
-    }
-
-    public class CurrentWeather
-    {
-        public double Temperature { get; set; }
-        public double Windspeed { get; set; }
-        public double Winddirection { get; set; }
-        public int Weathercode { get; set; }
-        public DateTime Time { get; set; }
-
-        public override string ToString()
-        {
-            return "Temperature = " + Temperature + "°C, Windspeed = " + Windspeed +
-                "km/h, Winddirection = " + Winddirection + "°, Weathercode = " + Weathercode + " WMO code, Time = " + Time;
+            // System.Diagnostics.Debug.WriteLine(weatherForecast.Times[0] + " " + weatherForecast.Temperature_2m[0]);
         }
     }
 }

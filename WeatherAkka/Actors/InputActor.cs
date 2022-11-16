@@ -1,5 +1,4 @@
 ﻿using Akka.Actor;
-using System;
 using WeatherAkka.Models;
 using WeatherAkka.ViewModels;
 
@@ -9,13 +8,19 @@ namespace WeatherAkka.Actors
     {
         private readonly IActorRef weather;
         private readonly InputWindowViewModel inputWindowViewModel;
+        // private readonly SectionsWeatherChartViewModel sectionsWeatherChartViewModel;
 
-        public InputActor(InputWindowViewModel inputWindowViewModel)
+        private WeatherForecast weatherForecast;
+
+        public InputActor(InputWindowViewModel inputWindowViewModel/*, SectionsWeatherChartViewModel sectionsWeatherChartViewModel*/)
         {
             this.inputWindowViewModel = inputWindowViewModel;
+            // this.sectionsWeatherChartViewModel = sectionsWeatherChartViewModel;
             inputWindowViewModel.PropertyChanged += InputWindowViewModel_PropertyChanged;
+            // sectionsWeatherChartViewModel.PropertyChanged += SectionsWeatherChartViewModel_PropertyChanged;
 
-            
+            weatherForecast = new WeatherForecast();
+
             var fw = Context.System.ActorOf(Props.Create(() => new FileWriterActor()), "FileWriterActor");
             weather = Context.System.ActorOf(Props.Create(() => new WeatherActor(fw, Self)), "WeatherActor");
             // this.weather.Tell(inputWindowViewModel.City);
@@ -24,7 +29,13 @@ namespace WeatherAkka.Actors
             {
                 // System.Diagnostics.Debug.WriteLine(x);
                 inputWindowViewModel.RefreshLabel(x.ToString());
-                // inputWindowViewModel.PropertyChanged += InputWindowViewModel_PropertyChanged;
+            });
+
+            Receive<WeatherForecast>(x =>
+            {
+                weatherForecast = x;
+                inputWindowViewModel.SectionsWeatherChartViewModel.RefreshData(weatherForecast);
+                // sectionsWeatherChartViewModel.RefreshData(weatherForecast);
             });
         }
 
@@ -38,5 +49,18 @@ namespace WeatherAkka.Actors
                 }   
             }
         }
+
+        /*
+        private void SectionsWeatherChartViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "SeriesCollection")
+            {
+                if (sectionsWeatherChartViewModel.SeriesCollection != null)
+                {
+                    sectionsWeatherChartViewModel.RefreshData(weatherForecast);
+                }
+            }
+        }
+        */
     }
 }
