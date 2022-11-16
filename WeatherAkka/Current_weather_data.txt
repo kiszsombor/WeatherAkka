@@ -1,1 +1,1 @@
-Berlin: Temperature = 11,1°C, Windspeed = 6,9km/h, Winddirection = 99°, Weathercode = 3 WMO code, Time = 2022. 11. 15. 15:00:00
+Szolnok: Temperature = 8,7°C, Windspeed = 6,2km/h, Winddirection = 144°, Weathercode = 51 WMO code, Time = 2022. 11. 16. 7:00:00

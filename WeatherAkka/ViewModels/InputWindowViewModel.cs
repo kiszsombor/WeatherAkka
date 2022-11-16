@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Data;
+using System.Runtime.CompilerServices;
 using System.Windows.Data;
 
 namespace WeatherAkka.ViewModels
@@ -31,9 +32,17 @@ namespace WeatherAkka.ViewModels
             }
         }
 
-        public string WeatherData { get => weatherData; set => weatherData = value; }
+        public string WeatherData
+        {
+            get => weatherData;
+            set
+            {
+                weatherData = value;
+                RaisePropertyChanged();
+            }
+        }
 
-        private void RaisePropertyChanged(string property)
+        private void RaisePropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
