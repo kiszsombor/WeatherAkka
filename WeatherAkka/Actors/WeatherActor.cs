@@ -5,6 +5,7 @@ using System;
 using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
+using WeatherAkka.Actors;
 
 namespace WeatherAkka.Models
 {
@@ -20,6 +21,8 @@ namespace WeatherAkka.Models
             currentWeather = new CurrentWeather();
             weatherForecast = new WeatherForecast();
 
+            var da = Context.System.ActorOf(Props.Create(() => new DataBaseActor()), "DataBaseActor");
+
             Receive<string>(x =>
             {
                 GetWeatherAsync(x).Wait();
@@ -29,6 +32,10 @@ namespace WeatherAkka.Models
                 fileWriter.Tell(x + ": " + data);
                 // Sender.Tell(x + ": " + data); // ???
                 weather.Tell(weatherForecast);
+
+                // da.Tell("fullList");
+                da.Tell(currentWeather);
+                da.Tell(weatherForecast);
             });
         }
 
@@ -70,12 +77,14 @@ namespace WeatherAkka.Models
 
             // System.Diagnostics.Debug.WriteLine(data.SelectToken("current_weather"));
             // currentWeather = data.SelectToken("current_weather").Value<CurrentWeather>();
+            currentWeather.Cityname = cityName;
             currentWeather.Temperature = data.SelectToken("current_weather.temperature").Value<double>();
             currentWeather.Windspeed = data.SelectToken("current_weather.windspeed").Value<double>();
             currentWeather.Winddirection = data.SelectToken("current_weather.winddirection").Value<double>();
             currentWeather.Weathercode = data.SelectToken("current_weather.weathercode").Value<int>();
             currentWeather.Time = data.SelectToken("current_weather.time").Value<DateTime>();
 
+            weatherForecast.CityName= cityName;
             foreach (var singleProp in data.SelectToken("hourly.time"))
             {
                 weatherForecast.Times.Add(singleProp.Value<DateTime>());

@@ -10,7 +10,8 @@ namespace WeatherAkka.Models
             Times = new List<DateTime>();
             Temperature_2m = new List<double>();
         }
-
+        
+        public string CityName { get; set; }
         public List<DateTime> Times { get; set; }
         public List<double> Temperature_2m { get; set; }
     }

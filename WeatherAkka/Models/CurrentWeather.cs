@@ -4,6 +4,7 @@ namespace WeatherAkka.Models
 {
     public class CurrentWeather
     {
+        public string Cityname { get; set; }
         public double Temperature { get; set; }
         public double Windspeed { get; set; }
         public double Winddirection { get; set; }
@@ -12,7 +13,7 @@ namespace WeatherAkka.Models
 
         public override string ToString()
         {
-            return "Temperature = " + Temperature + "°C, Windspeed = " + Windspeed +
+            return "Cityname = " + Cityname + ": " + "Temperature = " + Temperature + "°C, Windspeed = " + Windspeed +
                 "km/h, Winddirection = " + Winddirection + "°, Weathercode = " + Weathercode + " WMO code, Time = " + Time;
         }
     }
