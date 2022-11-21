@@ -1,6 +1,8 @@
 ﻿using Akka.Actor;
+using Akka.Event;
 using Microsoft.Data.SqlClient;
 using System;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using WeatherAkka.Models;
@@ -38,6 +40,20 @@ namespace WeatherAkka.Actors
                 {
                     // System.Diagnostics.Debug.WriteLine(x);
                     ListCurrentWeather();
+                }
+            });
+
+            Receive<Tuple<string, string>>(x =>
+            {
+                using (var command = new SqlCommand("InsertCurrentWeatherAndWeatherForecast", connection)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                    Parameters = { new SqlParameter("@cityname", x.Item1), new SqlParameter("@jsonVariable", x.Item2) }
+                })
+                {
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
                 }
             });
 

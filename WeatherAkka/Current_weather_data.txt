@@ -1,1 +1,1 @@
-Berlin: Cityname = Berlin: Temperature = -1,5°C, Windspeed = 3,1km/h, Winddirection = 315°, Weathercode = 3 WMO code, Time = 2022. 11. 21. 8:00:00
+Berlin: Cityname = Berlin: Temperature = 0,4°C, Windspeed = 3,6km/h, Winddirection = 135°, Weathercode = 2 WMO code, Time = 2022. 11. 21. 14:00:00

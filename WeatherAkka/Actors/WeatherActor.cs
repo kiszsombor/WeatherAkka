@@ -14,6 +14,9 @@ namespace WeatherAkka.Models
         private readonly Geocoding geocoding;
         private readonly CurrentWeather currentWeather;
         private readonly WeatherForecast weatherForecast;
+        private readonly IActorRef da;
+        // private string body;
+        private Tuple<string, string> cityNameAndJson;
 
         public WeatherActor(IActorRef fileWriter, IActorRef weather)
         {
@@ -21,7 +24,8 @@ namespace WeatherAkka.Models
             currentWeather = new CurrentWeather();
             weatherForecast = new WeatherForecast();
 
-            var da = Context.System.ActorOf(Props.Create(() => new DataBaseActor()), "DataBaseActor");
+            // var da = Context.System.ActorOf(Props.Create(() => new DataBaseActor()), "DataBaseActor");
+            da = Context.System.ActorOf(Props.Create(() => new DataBaseActor()), "DataBaseActor");
 
             Receive<string>(x =>
             {
@@ -34,8 +38,9 @@ namespace WeatherAkka.Models
                 weather.Tell(weatherForecast);
 
                 // da.Tell("fullList");
-                da.Tell(currentWeather);
-                da.Tell(weatherForecast);
+                // da.Tell(currentWeather);
+                // da.Tell(weatherForecast);
+                da.Tell(cityNameAndJson);
             });
         }
 
@@ -72,6 +77,7 @@ namespace WeatherAkka.Models
 
             body = await response.Content.ReadAsStringAsync();
             // CurrentWeather currentWeather = JsonConvert.DeserializeObject<CurrentWeather>(body);
+
             data = (JObject)JsonConvert.DeserializeObject(body);
             // System.Diagnostics.Debug.WriteLine(data);
 
@@ -84,7 +90,9 @@ namespace WeatherAkka.Models
             currentWeather.Weathercode = data.SelectToken("current_weather.weathercode").Value<int>();
             currentWeather.Time = data.SelectToken("current_weather.time").Value<DateTime>();
 
-            weatherForecast.CityName= cityName;
+            cityNameAndJson = new Tuple<string, string>(cityName, body);
+
+            weatherForecast.CityName = cityName;
             foreach (var singleProp in data.SelectToken("hourly.time"))
             {
                 weatherForecast.Times.Add(singleProp.Value<DateTime>());
