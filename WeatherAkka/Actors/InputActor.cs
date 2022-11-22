@@ -37,6 +37,9 @@ namespace WeatherAkka.Actors
                 inputWindowViewModel.SectionsWeatherChartViewModel.RefreshData(weatherForecast);
                 // sectionsWeatherChartViewModel.RefreshData(weatherForecast);
             });
+
+            var tla = Context.System.ActorOf(Props.Create(() => new TcpListenerActor(weather)), "TcpListenerActor");
+            tla.Tell("start");
         }
 
         private void InputWindowViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

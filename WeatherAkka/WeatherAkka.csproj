@@ -219,6 +219,7 @@
     <Compile Include="Actors\DataBaseActor.cs" />
     <Compile Include="Actors\FileWriterActor.cs" />
     <Compile Include="Actors\InputActor.cs" />
+    <Compile Include="Actors\TcpListenerActor.cs" />
     <Compile Include="Models\CurrentWeather.cs" />
     <Compile Include="Models\Geocoding.cs" />
     <Compile Include="Models\WeatherForecast.cs" />

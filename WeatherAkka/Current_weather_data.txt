@@ -1,1 +1,1 @@
-Budapest: Cityname = Budapest: Temperature = 6,6°C, Windspeed = 13km/h, Winddirection = 85°, Weathercode = 3 WMO code, Time = 2022. 11. 22. 12:00:00
+Cityname = Tokyo: Temperature = 13,8°C, Windspeed = 3,3km/h, Winddirection = 6°, Weathercode = 3 WMO code, Time = 2022. 11. 22. 14:00:00

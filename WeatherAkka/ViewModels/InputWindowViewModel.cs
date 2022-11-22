@@ -58,7 +58,8 @@ namespace WeatherAkka.ViewModels
 
         public void RefreshLabel(string label)
         {
-            WeatherData = Name + ": " + label;
+            // WeatherData = Name + ": " + label;
+            WeatherData = label;
         }
 
         private void OnPrint()

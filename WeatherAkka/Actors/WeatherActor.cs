@@ -27,13 +27,13 @@ namespace WeatherAkka.Models
             // var da = Context.System.ActorOf(Props.Create(() => new DataBaseActor()), "DataBaseActor");
             da = Context.System.ActorOf(Props.Create(() => new DataBaseActor()), "DataBaseActor");
 
-            Receive<string>(x =>
+            Receive<string>(cityName =>
             {
-                GetWeatherAsync(x).Wait();
+                GetWeatherAsync(cityName).Wait();
                 // System.Diagnostics.Debug.WriteLine(currentWeather);
                 string data = currentWeather.ToString();
                 weather.Tell(currentWeather);
-                fileWriter.Tell(x + ": " + data);
+                fileWriter.Tell(data);
                 // Sender.Tell(x + ": " + data); // ???
                 weather.Tell(weatherForecast);
 
