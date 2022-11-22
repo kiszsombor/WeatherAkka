@@ -1,1 +1,1 @@
-Berlin: Cityname = Berlin: Temperature = 0,4°C, Windspeed = 3,6km/h, Winddirection = 135°, Weathercode = 2 WMO code, Time = 2022. 11. 21. 14:00:00
+Budapest: Cityname = Budapest: Temperature = 6,6°C, Windspeed = 13km/h, Winddirection = 85°, Weathercode = 3 WMO code, Time = 2022. 11. 22. 12:00:00

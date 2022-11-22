@@ -34,7 +34,7 @@ namespace WeatherAkka.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public SectionsWeatherChartViewModel(System.Windows.Threading.Dispatcher dispatcher)
+        public SectionsWeatherChartViewModel(Dispatcher dispatcher)
         {
             labels = new List<string>() { "10", "20", "30", "40", "50", "60" };
 

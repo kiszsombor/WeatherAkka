@@ -93,6 +93,8 @@ namespace WeatherAkka.Models
             cityNameAndJson = new Tuple<string, string>(cityName, body);
 
             weatherForecast.CityName = cityName;
+            weatherForecast.Times.Clear();
+            weatherForecast.Temperature_2m.Clear();
             foreach (var singleProp in data.SelectToken("hourly.time"))
             {
                 weatherForecast.Times.Add(singleProp.Value<DateTime>());
