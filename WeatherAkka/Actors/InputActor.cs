@@ -12,7 +12,7 @@ namespace WeatherAkka.Actors
 
         private WeatherForecast weatherForecast;
 
-        public InputActor(InputWindowViewModel inputWindowViewModel/*, SectionsWeatherChartViewModel sectionsWeatherChartViewModel*/)
+        public InputActor(InputWindowViewModel inputWindowViewModel/*, Inbox inbox, SectionsWeatherChartViewModel sectionsWeatherChartViewModel*/)
         {
             this.inputWindowViewModel = inputWindowViewModel;
             // this.sectionsWeatherChartViewModel = sectionsWeatherChartViewModel;
@@ -22,7 +22,7 @@ namespace WeatherAkka.Actors
             weatherForecast = new WeatherForecast();
 
             var fw = Context.System.ActorOf(Props.Create(() => new FileWriterActor()), "FileWriterActor");
-            weather = Context.System.ActorOf(Props.Create(() => new WeatherActor(fw, Self)), "WeatherActor");
+            weather = Context.System.ActorOf(Props.Create(() => new WeatherActor(fw, Self/*, inbox*/)), "WeatherActor");
             // this.weather.Tell(inputWindowViewModel.City);
 
             Receive<CurrentWeather>(x =>
@@ -40,6 +40,9 @@ namespace WeatherAkka.Actors
 
             var tla = Context.System.ActorOf(Props.Create(() => new TcpListenerActor(weather)), "TcpListenerActor");
             tla.Tell("start");
+
+            // tla.Tell(inbox);
+            // weather.Tell(tla);
         }
 
         private void InputWindowViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

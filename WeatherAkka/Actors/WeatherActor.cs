@@ -18,7 +18,7 @@ namespace WeatherAkka.Models
         // private string body;
         private Tuple<string, string> cityNameAndJson;
 
-        public WeatherActor(IActorRef fileWriter, IActorRef weather)
+        public WeatherActor(IActorRef fileWriter, IActorRef weather/*, Inbox inbox*/)
         {
             geocoding = new Geocoding();
             currentWeather = new CurrentWeather();
@@ -29,20 +29,37 @@ namespace WeatherAkka.Models
 
             Receive<string>(cityName =>
             {
-                GetWeatherAsync(cityName).Wait();
-                // System.Diagnostics.Debug.WriteLine(currentWeather);
-                string data = currentWeather.ToString();
-                weather.Tell(currentWeather);
-                fileWriter.Tell(data);
-                // Sender.Tell(x + ": " + data); // ???
-                weather.Tell(weatherForecast);
+                if(cityName.Equals("ask_currentWeather"))
+                {
+                    // System.Diagnostics.Debug.WriteLine("---------------");
+                    Sender.Tell(currentWeather);
+                }
+                else
+                {
+                    GetWeatherAsync(cityName).Wait();
+                    // System.Diagnostics.Debug.WriteLine(currentWeather);
+                    string data = currentWeather.ToString();
+                    weather.Tell(currentWeather);
+                    fileWriter.Tell(data);
+                    // Sender.Tell(x + ": " + data); // ???
+                    weather.Tell(weatherForecast);
 
-                // da.Tell("fullList");
-                // da.Tell(currentWeather);
-                // da.Tell(weatherForecast);
-                da.Tell(cityNameAndJson);
+                    // da.Tell("fullList");
+                    // da.Tell(currentWeather);
+                    // da.Tell(weatherForecast);
+                    da.Tell(cityNameAndJson);
+                }
             });
+
+            /*
+            Receive<IActorRef>(tcpActor =>
+            {
+                inbox.Send(tcpActor, "hello");
+            });
+            */
         }
+
+        public CurrentWeather CurrentWeather => currentWeather;
 
         public async Task GetWeatherAsync(string cityName)
         {

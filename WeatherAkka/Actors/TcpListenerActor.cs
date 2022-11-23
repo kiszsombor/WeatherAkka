@@ -1,14 +1,18 @@
 ﻿using Akka.Actor;
+using Akka.Event;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using WeatherAkka.Models;
 
 namespace WeatherAkka.Actors
 {
     public class TcpListenerActor : ReceiveActor
     {
-        private IActorRef weather;
+        private readonly IActorRef weather;
         private TcpListener server = null;
+        // private Inbox inbox;
         private bool stop;
 
         public TcpListenerActor(IActorRef weather)
@@ -18,16 +22,29 @@ namespace WeatherAkka.Actors
 
             Receive<string>(x =>
             {
-                if (x.Equals("start"))
+                if (x.Equals("start") || x.Equals("Start"))
                 {
-                    // System.Diagnostics.Debug.WriteLine("OK");
-                    Start();
+                    // System.Diagnostics.Debug.WriteLine("START");
+                    if (server == null)
+                    {
+                        Start();
+                    }
                 }
-                if (x.Equals("stop"))
+                if (x.Equals("stop") || x.Equals("Stop"))
                 {
-                    stop= true;
+                    // System.Diagnostics.Debug.WriteLine("STOP");
+                    stop = true;
                 }
             });
+
+            /*
+            Receive<Inbox>(inbox =>
+            {
+                // System.Diagnostics.Debug.WriteLine("OK");
+                this.inbox = inbox;
+                Start();
+            });
+            */
         }
 
         public void Start()
@@ -47,6 +64,7 @@ namespace WeatherAkka.Actors
                 // Buffer for reading data
                 byte[] bytes = new byte[256];
                 string data = null;
+                CurrentWeather currentWeather = null;
 
                 // Enter the listening loop.
                 while (!stop)
@@ -71,17 +89,37 @@ namespace WeatherAkka.Actors
                         {
                             // Translate data bytes to a ASCII string.
                             data = Encoding.ASCII.GetString(bytes, 0, i);
-                            System.Diagnostics.Debug.WriteLine("Received: {0}", data);
+                            System.Diagnostics.Debug.WriteLine("Received: {0}", data, "");
 
                             // Process the data sent by the client.
                             weather.Tell(data);
-                            data = data.ToUpper();
+
+                            using (var a = weather.Ask("ask_currentWeather"))
+                            {
+                                a.Wait();
+                                // System.Diagnostics.Debug.WriteLine(a.Result);
+                                currentWeather = (CurrentWeather)a.Result;
+                            }
+
+                            data = currentWeather.ToString();
+
+                            // try
+                            // {
+                            //     System.Diagnostics.Debug.WriteLine(inbox.Receive().ToString());
+                            // }
+                            // catch (TimeoutException)
+                            // {
+                            //     System.Diagnostics.Debug.WriteLine("TCP ERROR!");
+                            //     // timeout
+                            // }
+
+                            // data = data.ToUpper();
 
                             byte[] msg = Encoding.ASCII.GetBytes(data);
 
                             // Send back a response.
                             stream.Write(msg, 0, msg.Length);
-                            System.Diagnostics.Debug.WriteLine("Sent: {0}", data);
+                            System.Diagnostics.Debug.WriteLine("Sent: {0}", data, "");
                         }
                     }
                 }

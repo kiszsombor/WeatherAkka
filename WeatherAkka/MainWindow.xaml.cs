@@ -23,11 +23,12 @@ namespace WeatherAkka
             // var chart = new SectionsWeatherChartViewModel();
 
             var system = ActorSystem.Create("MySystem");
+            // var inbox = Inbox.Create(system);
 
             // var fw = system.ActorOf(Props.Create(() => new FileWriterActor()), "FileWriterActor");
             // var wa = system.ActorOf(Props.Create(() => new WeatherActor(fw)), "WeatherActor");
             // var ia = system.ActorOf(Props.Create(() => new InputActor(wa, input)), "InputActor");
-            system.ActorOf(Props.Create(() => new InputActor(input/*, chart*/)), "InputActor");
+            system.ActorOf(Props.Create(() => new InputActor(input/*, inbox, chart*/)), "InputActor");
         }
     }
 }

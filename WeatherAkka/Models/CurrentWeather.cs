@@ -13,7 +13,7 @@ namespace WeatherAkka.Models
 
         public override string ToString()
         {
-            return "Cityname = " + Cityname + ": " + "Temperature = " + Temperature + "°C, Windspeed = " + Windspeed +
+            return "Cityname = " + Cityname + ", " + "Temperature = " + Temperature + "°C, Windspeed = " + Windspeed +
                 "km/h, Winddirection = " + Winddirection + "°, Weathercode = " + Weathercode + " WMO code, Time = " + Time;
         }
     }
