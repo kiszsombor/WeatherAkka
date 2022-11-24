@@ -15,6 +15,7 @@ namespace WeatherAkka.Models
         private readonly CurrentWeather currentWeather;
         private readonly WeatherForecast weatherForecast;
         private readonly IActorRef da;
+        readonly IActorRef mba;
         // private string body;
         private Tuple<string, string> cityNameAndJson;
 
@@ -27,7 +28,7 @@ namespace WeatherAkka.Models
             // var da = Context.System.ActorOf(Props.Create(() => new DataBaseActor()), "DataBaseActor");
             da = Context.System.ActorOf(Props.Create(() => new DataBaseActor()), "DataBaseActor");
 
-            var mba = Context.System.ActorOf(Props.Create(() => new ModbusActor()), "ModbusActor");
+            mba = Context.System.ActorOf(Props.Create(() => new ModbusActor()), "ModbusActor");
 
             Receive<string>(cityName =>
             {
@@ -49,6 +50,7 @@ namespace WeatherAkka.Models
                     // da.Tell(currentWeather);
                     // da.Tell(weatherForecast);
                     da.Tell(cityNameAndJson);
+                    mba.Tell(currentWeather);
                 }
             });
         }

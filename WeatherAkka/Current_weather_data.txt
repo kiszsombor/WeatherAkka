@@ -1,1 +1,1 @@
-Cityname = Madrid, Temperature = 9,6°C, Windspeed = 1,4km/h, Winddirection = 180°, Weathercode = 3 WMO code, Time = 2022. 11. 24. 8:00:00
+Cityname = Moscow, Temperature = -3,6°C, Windspeed = 6,9km/h, Winddirection = 51°, Weathercode = 3 WMO code, Time = 2022. 11. 24. 12:00:00
