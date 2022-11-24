@@ -18,7 +18,7 @@ namespace WeatherAkka.Models
         // private string body;
         private Tuple<string, string> cityNameAndJson;
 
-        public WeatherActor(IActorRef fileWriter, IActorRef weather/*, Inbox inbox*/)
+        public WeatherActor(IActorRef fileWriter, IActorRef weather)
         {
             geocoding = new Geocoding();
             currentWeather = new CurrentWeather();
@@ -27,11 +27,12 @@ namespace WeatherAkka.Models
             // var da = Context.System.ActorOf(Props.Create(() => new DataBaseActor()), "DataBaseActor");
             da = Context.System.ActorOf(Props.Create(() => new DataBaseActor()), "DataBaseActor");
 
+            var mba = Context.System.ActorOf(Props.Create(() => new ModbusActor()), "ModbusActor");
+
             Receive<string>(cityName =>
             {
                 if(cityName.Equals("ask_currentWeather"))
                 {
-                    // System.Diagnostics.Debug.WriteLine("---------------");
                     Sender.Tell(currentWeather);
                 }
                 else
@@ -50,13 +51,6 @@ namespace WeatherAkka.Models
                     da.Tell(cityNameAndJson);
                 }
             });
-
-            /*
-            Receive<IActorRef>(tcpActor =>
-            {
-                inbox.Send(tcpActor, "hello");
-            });
-            */
         }
 
         public CurrentWeather CurrentWeather => currentWeather;

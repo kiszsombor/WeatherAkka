@@ -28,7 +28,7 @@ namespace WeatherAkka
             // var fw = system.ActorOf(Props.Create(() => new FileWriterActor()), "FileWriterActor");
             // var wa = system.ActorOf(Props.Create(() => new WeatherActor(fw)), "WeatherActor");
             // var ia = system.ActorOf(Props.Create(() => new InputActor(wa, input)), "InputActor");
-            system.ActorOf(Props.Create(() => new InputActor(input/*, inbox, chart*/)), "InputActor");
+            system.ActorOf(Props.Create(() => new InputActor(input/*, chart*/)), "InputActor");
         }
     }
 }

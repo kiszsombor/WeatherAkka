@@ -1,5 +1,4 @@
 ﻿using Akka.Actor;
-using Akka.Event;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Data;

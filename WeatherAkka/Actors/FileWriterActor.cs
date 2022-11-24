@@ -1,5 +1,4 @@
 ﻿using Akka.Actor;
-using Akka.IO;
 using System.IO;
 
 namespace WeatherAkka.Actors

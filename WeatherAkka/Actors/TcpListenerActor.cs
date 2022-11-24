@@ -1,6 +1,4 @@
 ﻿using Akka.Actor;
-using Akka.Event;
-using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -12,7 +10,7 @@ namespace WeatherAkka.Actors
     {
         private readonly IActorRef weather;
         private TcpListener server = null;
-        // private Inbox inbox;
+        // private TcpClient tcpClienttcpClient = null;
         private bool stop;
 
         public TcpListenerActor(IActorRef weather)
@@ -36,15 +34,6 @@ namespace WeatherAkka.Actors
                     stop = true;
                 }
             });
-
-            /*
-            Receive<Inbox>(inbox =>
-            {
-                // System.Diagnostics.Debug.WriteLine("OK");
-                this.inbox = inbox;
-                Start();
-            });
-            */
         }
 
         public void Start()
@@ -74,6 +63,7 @@ namespace WeatherAkka.Actors
                     // Perform a blocking call to accept requests.
                     // You could also use server.AcceptSocket() here.
                     using (TcpClient client = server.AcceptTcpClient())
+                    // using (TcpClient client = server.AcceptTcpClientAsync())
                     {
                         System.Diagnostics.Debug.WriteLine("Connected!");
 
@@ -85,6 +75,7 @@ namespace WeatherAkka.Actors
                         int i;
 
                         // Loop to receive all the data sent by the client.
+                        // stream.readline
                         while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                         {
                             // Translate data bytes to a ASCII string.
@@ -102,18 +93,6 @@ namespace WeatherAkka.Actors
                             }
 
                             data = currentWeather.ToString();
-
-                            // try
-                            // {
-                            //     System.Diagnostics.Debug.WriteLine(inbox.Receive().ToString());
-                            // }
-                            // catch (TimeoutException)
-                            // {
-                            //     System.Diagnostics.Debug.WriteLine("TCP ERROR!");
-                            //     // timeout
-                            // }
-
-                            // data = data.ToUpper();
 
                             byte[] msg = Encoding.ASCII.GetBytes(data);
 

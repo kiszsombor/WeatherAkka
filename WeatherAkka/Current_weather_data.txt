@@ -1,1 +1,1 @@
-Cityname = Madrid, Temperature = 13,4°C, Windspeed = 20,2km/h, Winddirection = 235°, Weathercode = 61 WMO code, Time = 2022. 11. 23. 12:00:00
+Cityname = Madrid, Temperature = 9,6°C, Windspeed = 1,4km/h, Winddirection = 180°, Weathercode = 3 WMO code, Time = 2022. 11. 24. 8:00:00
