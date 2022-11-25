@@ -1,25 +1,26 @@
 ﻿using Akka.Actor;
-using Akka.Util;
+using Akka.Util.Internal;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
-using System.Threading.Tasks;
 using WeatherAkka.Models;
 
 namespace WeatherAkka.Actors
 {
     public class TcpListenerActor : ReceiveActor
     {
-        private readonly IActorRef weather;
         private TcpListener server = null;
-        private TcpClient client;
+        // private TcpClient client;
+        private Dictionary<int, TcpClient> clients;
+        private int clientId;
 
         public TcpListenerActor(IActorRef weather)
         {
-            this.weather = weather;
+            clients= new Dictionary<int, TcpClient>();
+            clientId = -1;
 
             Receive<string>(x =>
             {
@@ -35,7 +36,7 @@ namespace WeatherAkka.Actors
                 {
                     // System.Diagnostics.Debug.WriteLine("STOP");
                     server.Stop();
-                    System.Diagnostics.Debug.WriteLine("\nDone...");
+                    System.Diagnostics.Debug.WriteLine("_______\nDone...");
                 }
                 else
                 {
@@ -43,15 +44,14 @@ namespace WeatherAkka.Actors
                 }
             });
 
-            Receive<(StreamReader, string)>(x =>
+            Receive<(StreamReader, string, int)>(x =>
             {
-                NetworkStream stream = client.GetStream();
-
                 StreamReader reader = x.Item1;
                 if (x.Item2 != null)
                 {
                     weather.Tell(x.Item2);
-
+                    weather.Ask(("ask_currentWeather", x.Item3)).PipeTo(Self, null, s => (Tuple<CurrentWeather, int>)s);
+                    /*
                     using (var task = weather.Ask("ask_currentWeather"))
                     {
                         task.Wait();
@@ -60,22 +60,41 @@ namespace WeatherAkka.Actors
                         byte[] msg = Encoding.ASCII.GetBytes(currentWeather.ToString());
                         stream.Write(msg, 0, msg.Length);
                     }
+                    */
 
-                    reader.ReadLineAsync().PipeTo(Self, null, (s) => (reader, s));
+                    reader.ReadLineAsync().PipeTo(Self, null, (s) => (reader, s, x.Item3));
                     // server.AcceptTcpClientAsync().PipeTo(Self);
                 }
             });
 
             Receive<TcpClient>(x =>
             {
-                client = x;
+                // client = x;
+                ++clientId;
+                clients.Add(clientId, x);
 
-                NetworkStream stream = client.GetStream();
+                // NetworkStream stream = client.GetStream();
+                NetworkStream stream = clients[clientId].GetStream();
 
                 StreamReader reader = new StreamReader(stream);
-                reader.ReadLineAsync().PipeTo(Self, null, (s) => (reader, s));
+                // reader.ReadLineAsync().PipeTo(Self, null, (s) => (reader, s));
+                reader.ReadLineAsync().PipeTo(Self, null, (s) => (reader, s, clientId));
 
                 server.AcceptTcpClientAsync().PipeTo(Self);
+            });
+
+            Receive<Tuple<CurrentWeather, int>>(currentWeatherAndId =>
+            {
+                // NetworkStream stream = client.GetStream();
+                NetworkStream stream = clients[currentWeatherAndId.Item2].GetStream();
+
+                // byte[] msg = Encoding.ASCII.GetBytes(currentWeather.ToString());
+                byte[] msg = Encoding.ASCII.GetBytes(currentWeatherAndId.Item1.ToString());
+                stream.Write(msg, 0, msg.Length);
+                if (!clients[currentWeatherAndId.Item2].Connected)
+                {
+                    clients.Remove(currentWeatherAndId.Item2);
+                } 
             });
         }
 

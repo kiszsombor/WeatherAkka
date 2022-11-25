@@ -32,11 +32,7 @@ namespace WeatherAkka.Models
 
             Receive<string>(cityName =>
             {
-                if(cityName.Equals("ask_currentWeather"))
-                {
-                    Sender.Tell(currentWeather);
-                }
-                else
+                if (cityName != null)
                 {
                     GetWeatherAsync(cityName).Wait();
                     // System.Diagnostics.Debug.WriteLine(currentWeather);
@@ -53,6 +49,16 @@ namespace WeatherAkka.Models
                     mba.Tell(currentWeather);
                 }
             });
+
+            Receive<(string, int)>(commandAndId =>
+            {
+                // System.Diagnostics.Debug.WriteLine(commandAndId.Item2);
+                if (commandAndId.Item1.Equals("ask_currentWeather"))
+                {
+                    Sender.Tell(new Tuple<CurrentWeather, int>(currentWeather, commandAndId.Item2));
+                }
+            });
+
         }
 
         public CurrentWeather CurrentWeather => currentWeather;

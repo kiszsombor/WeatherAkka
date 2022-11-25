@@ -1,1 +1,1 @@
-Cityname = Moscow, Temperature = -3,6°C, Windspeed = 6,9km/h, Winddirection = 51°, Weathercode = 3 WMO code, Time = 2022. 11. 24. 12:00:00
+Cityname = Budapest, Temperature = 8,6°C, Windspeed = 7,6km/h, Winddirection = 315°, Weathercode = 2 WMO code, Time = 2022. 11. 25. 11:00:00

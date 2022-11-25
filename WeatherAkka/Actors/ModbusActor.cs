@@ -1,23 +1,20 @@
 ﻿using Akka.Actor;
 using NModbus;
 using System;
-using System.Collections.Generic;
-using System.IO.Ports;
-using System.Linq;
-using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using WeatherAkka.Models;
 
 namespace WeatherAkka.Actors
 {
-    public class ModbusActor : ReceiveActor
+    public class Check { };
+
+    public class ModbusActor : ReceiveActor, IWithTimers
     {
         private readonly TcpClient client;
         private readonly IModbusMaster master;
         private readonly bool connected;
+
+        public ITimerScheduler Timers { get; set; }
 
         public ModbusActor()
         {
@@ -31,40 +28,19 @@ namespace WeatherAkka.Actors
 
                 connected = true;
 
-                /*
-                using (client = new TcpClient("127.0.0.1", 502))
-                {
-                    var factory = new ModbusFactory();
-                    master = factory.CreateMaster(client);
-
-                    connected = true;
-
-                    // read five input values
-                    // ushort startAddress = 1;
-                    // ushort numInputs = 5;
-                    // bool[] inputs = master.ReadInputs(1, startAddress, numInputs);
-                    // System.Diagnostics.Debug.WriteLine("OK");
-
-                    master.WriteSingleRegister(1, 5, 250);
-                    master.WriteSingleCoil(1, 5, true);
-
-                    // for (int i = 0; i < numInputs; ++i)
-                    // {
-                    //     System.Diagnostics.Debug.WriteLine($"Input {(startAddress + i)}={(inputs[i] ? 1 : 0)}");
-                    // }
-                }
-                */
             } catch(Exception ex)
             {
+                connected = false;
+                Timers.Cancel("canDelte?");
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
-            
 
             Receive<CurrentWeather>(currenWeather =>
             {
                 if(connected)
                 {
-                    if(currenWeather.Temperature < 0) 
+                    master.WriteSingleCoil(1, 4, true);
+                    if (currenWeather.Temperature < 0) 
                     {
                         master.WriteSingleCoil(1, 5, true);
                     }
@@ -74,12 +50,38 @@ namespace WeatherAkka.Actors
                     }
 
                     master.WriteSingleRegister(1, 5, (ushort)(Math.Abs(currenWeather.Temperature * 10)));
+                    // System.Diagnostics.Debug.WriteLine(master.ReadHoldingRegisters(1, 5, 1)[0]);
+                    // Timers.StartPeriodicTimer("add", 1, TimeSpan.FromMilliseconds(0), TimeSpan.FromMilliseconds(20));
+                }
+                else
+                {
+                    Timers.Cancel("canDelte?");
+                    System.Diagnostics.Debug.WriteLine("Modbus connection falied!");
+                }
+            });
+
+            Receive<Check>(_ =>
+            {
+                if (connected)
+                {
+                    if(master.ReadCoils(1, 3, 1)[0])
+                    {
+                        master.WriteSingleCoil(1, 4, false);
+                        master.WriteSingleCoil(1, 5, false);
+                        master.WriteSingleRegister(1, 5, 0);
+                    }
                 }
                 else
                 {
                     System.Diagnostics.Debug.WriteLine("Modbus connection falied!");
+                    Timers.Cancel("canDelte?");
                 }
             });
+        }
+
+        protected override void PreStart()
+        {
+            Timers.StartPeriodicTimer("canDelte?", new Check(), TimeSpan.FromMilliseconds(3000));
         }
     }
 }
