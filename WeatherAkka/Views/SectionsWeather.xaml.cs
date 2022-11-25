@@ -1,5 +1,4 @@
 ﻿using System.Windows.Controls;
-using WeatherAkka.ViewModels;
 
 namespace WeatherAkka.Views.SectionsWeatherCharts
 {

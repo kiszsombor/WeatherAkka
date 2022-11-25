@@ -55,8 +55,11 @@ namespace WeatherAkka.Actors
                 }
                 else
                 {
-                    Timers.Cancel("canDelte?");
-                    System.Diagnostics.Debug.WriteLine("Modbus connection falied!");
+                    if (Timers.IsTimerActive("canDelte?"))
+                    {
+                        Timers.Cancel("canDelte?");
+                        System.Diagnostics.Debug.WriteLine("Modbus connection falied!");
+                    }
                 }
             });
 
