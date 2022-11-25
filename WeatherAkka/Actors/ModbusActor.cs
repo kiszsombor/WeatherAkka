@@ -31,7 +31,7 @@ namespace WeatherAkka.Actors
             } catch(Exception ex)
             {
                 connected = false;
-                Timers.Cancel("canDelte?");
+                Timers.Cancel("canDelete?");
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
 
@@ -55,9 +55,9 @@ namespace WeatherAkka.Actors
                 }
                 else
                 {
-                    if (Timers.IsTimerActive("canDelte?"))
+                    if (Timers.IsTimerActive("canDelete?"))
                     {
-                        Timers.Cancel("canDelte?");
+                        Timers.Cancel("canDelete?");
                         System.Diagnostics.Debug.WriteLine("Modbus connection falied!");
                     }
                 }
@@ -77,14 +77,14 @@ namespace WeatherAkka.Actors
                 else
                 {
                     System.Diagnostics.Debug.WriteLine("Modbus connection falied!");
-                    Timers.Cancel("canDelte?");
+                    Timers.Cancel("canDelete?");
                 }
             });
         }
 
         protected override void PreStart()
         {
-            Timers.StartPeriodicTimer("canDelte?", new Check(), TimeSpan.FromMilliseconds(3000));
+            Timers.StartPeriodicTimer("canDelete?", new Check(), TimeSpan.FromMilliseconds(3000));
         }
     }
 }

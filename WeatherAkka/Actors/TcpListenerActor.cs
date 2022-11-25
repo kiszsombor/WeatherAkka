@@ -1,8 +1,11 @@
 ﻿using Akka.Actor;
+using Akka.Util.Internal;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using WeatherAkka.Models;
@@ -13,7 +16,7 @@ namespace WeatherAkka.Actors
     {
         private TcpListener server = null;
         // private TcpClient client;
-        private Dictionary<int, TcpClient> clients;
+        private readonly Dictionary<int, TcpClient> clients;
         private int clientId;
 
         public TcpListenerActor(IActorRef weather)
@@ -50,20 +53,15 @@ namespace WeatherAkka.Actors
                 {
                     weather.Tell(x.Item2);
                     weather.Ask(("ask_currentWeather", x.Item3)).PipeTo(Self, null, s => (Tuple<CurrentWeather, int>)s);
-                    /*
-                    using (var task = weather.Ask("ask_currentWeather"))
-                    {
-                        task.Wait();
-                        CurrentWeather currentWeather = (CurrentWeather)task.Result;
 
-                        byte[] msg = Encoding.ASCII.GetBytes(currentWeather.ToString());
-                        stream.Write(msg, 0, msg.Length);
-                    }
-                    */
-
-                    reader.ReadLineAsync().PipeTo(Self, null, (s) => (reader, s, x.Item3));
-                    // server.AcceptTcpClientAsync().PipeTo(Self);
+                    reader.ReadLineAsync().PipeTo(Self, null, (s) => (reader, s, x.Item3)/*, ex => (ex, x.Item3)*/);
                 }
+                /*
+                else
+                {
+                    clients.Remove(x.Item3);
+                }
+                */
             });
 
             Receive<TcpClient>(x =>
@@ -77,24 +75,58 @@ namespace WeatherAkka.Actors
 
                 StreamReader reader = new StreamReader(stream);
                 // reader.ReadLineAsync().PipeTo(Self, null, (s) => (reader, s));
-                reader.ReadLineAsync().PipeTo(Self, null, (s) => (reader, s, clientId));
+                reader.ReadLineAsync().PipeTo(Self, null, (s) => (reader, s, clientId)/*, ex => (ex, clientId)*/);
 
                 server.AcceptTcpClientAsync().PipeTo(Self);
             });
 
+            /*
+            Receive<Tuple<Exception, int>>(exceptionAndClientId =>
+            {
+                System.Diagnostics.Debug.WriteLine("ok");
+
+                // System.Diagnostics.Debug.WriteLine(exceptionAndClientId.Item1);
+                // clients.Remove(exceptionAndClientId.Item2);
+            });
+            */
+
             Receive<Tuple<CurrentWeather, int>>(currentWeatherAndId =>
             {
-                // NetworkStream stream = client.GetStream();
                 NetworkStream stream = clients[currentWeatherAndId.Item2].GetStream();
 
-                // byte[] msg = Encoding.ASCII.GetBytes(currentWeather.ToString());
                 byte[] msg = Encoding.ASCII.GetBytes(currentWeatherAndId.Item1.ToString());
                 stream.Write(msg, 0, msg.Length);
+
                 if (!clients[currentWeatherAndId.Item2].Connected)
                 {
                     clients.Remove(currentWeatherAndId.Item2);
-                } 
+
+                }
+
+                clients.ForEach(client => System.Diagnostics.Debug.WriteLine(client));
+                ClearConnections();
             });
+        }
+
+        private void ClearConnections()
+        {
+            List<int> ids = new List<int>();
+            foreach (var client in clients)
+            {
+                IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
+                TcpConnectionInformation[] tcpConnections = ipProperties.GetActiveTcpConnections().Where(x =>
+                    x.LocalEndPoint.Equals(client.Value.Client.LocalEndPoint)
+                    && x.RemoteEndPoint.Equals(client.Value.Client.RemoteEndPoint)).ToArray();
+
+                TcpState stateOfConnection = tcpConnections.First().State;
+                if (stateOfConnection != TcpState.Established)
+                {
+                    ids.Add(client.Key);
+                }
+            }
+
+            ids.ForEach(id => clients.Remove(id));
+            System.Diagnostics.Debug.WriteLine("cleared");
         }
 
         public void Start()
