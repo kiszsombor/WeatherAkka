@@ -1,5 +1,4 @@
 ﻿using Akka.Actor;
-using Akka.Util.Internal;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -103,7 +102,7 @@ namespace WeatherAkka.Actors
 
                 }
 
-                clients.ForEach(client => System.Diagnostics.Debug.WriteLine(client));
+                // clients.ForEach(client => System.Diagnostics.Debug.WriteLine(client));
                 ClearConnections();
             });
         }
@@ -113,6 +112,12 @@ namespace WeatherAkka.Actors
             List<int> ids = new List<int>();
             foreach (var client in clients)
             {
+                /*
+                if (!(client.Value.Client.Poll(1, SelectMode.SelectRead) && client.Value.Client.Available == 0))
+                {
+                    System.Diagnostics.Debug.WriteLine("ok");
+                }
+                */
                 IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
                 TcpConnectionInformation[] tcpConnections = ipProperties.GetActiveTcpConnections().Where(x =>
                     x.LocalEndPoint.Equals(client.Value.Client.LocalEndPoint)
@@ -126,7 +131,7 @@ namespace WeatherAkka.Actors
             }
 
             ids.ForEach(id => clients.Remove(id));
-            System.Diagnostics.Debug.WriteLine("cleared");
+            // System.Diagnostics.Debug.WriteLine("cleared");
         }
 
         public void Start()

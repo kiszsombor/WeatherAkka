@@ -69,7 +69,7 @@ namespace WeatherAkka.Actors
 
         public void ListCurrentWeather()
         {
-            String sql = "SELECT cityname, temperature, windspeed, winddirection, weathercode, time " +
+            string sql = "SELECT cityname, temperature, windspeed, winddirection, weathercode, time " +
                          "FROM CurrentWeather";
             using (SqlCommand command = new SqlCommand(sql, connection))
             {

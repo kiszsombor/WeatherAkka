@@ -1,1 +1,1 @@
-Cityname = Budapest, Temperature = 8,6°C, Windspeed = 4km/h, Winddirection = 333°, Weathercode = 2 WMO code, Time = 2022. 11. 25. 14:00:00
+Cityname = Budapest, Temperature = 3,3°C, Windspeed = 6,4km/h, Winddirection = 153°, Weathercode = 3 WMO code, Time = 2022. 11. 28. 8:00:00
